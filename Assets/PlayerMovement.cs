@@ -6,35 +6,69 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float speedOfPlayer;
-    [SerializeField] Rigidbody playerRb;
-    [SerializeField] CharacterController controller;
+    [SerializeField] CharacterController characterController;
+    [SerializeField] Transform camerPos;
+    [SerializeField] float PlayerRotationSpeed;
 
-    InputControls inputControls;
-
-
-    private void Start()
-    {
-        playerRb = GetComponent<Rigidbody>();
-        
-    }
+    InputControls inputControl;
+    Vector2 MoveInput = Vector2.zero;
 
     private void Awake()
     {
-        inputControls = new InputControls();
-
-        inputControls.PlayerMovement.Movement.performed += Movement_performed;
+        inputControl = new InputControls();
+        //characterController = GetComponent<CharacterController>();
     }
 
-    public void Movement_performed(UnityEngine.InputSystem.InputAction.CallbackContext context)
+    private void FixedUpdate()
     {
-        if (context.performed)
-        {
-            Debug.Log(context);
-            //Debug.Log("Player Is Moving");
+        transform.position += new Vector3(MoveInput.x, 0f, MoveInput.y) * speedOfPlayer * Time.fixedDeltaTime;
+        
+    }
+    private void OnEnable()
+    {
+        inputControl.Enable();
+        
+        //Movement
+        inputControl.PlayerMovement.Movement.performed += Movement_performed;
+        inputControl.PlayerMovement.Movement.canceled += Movement_canceled;
 
-            Vector3 playerInput = context.ReadValue<Vector3>();
-            playerInput = transform.right + transform.forward;
-            controller.Move(playerInput * speedOfPlayer);
-        }   
+        //Jump
+        inputControl.PlayerMovement.Jump.performed += Jump_performed;
+        inputControl.PlayerMovement.Jump.canceled += Jump_canceled;
+
+    }
+
+    private void OnDisable()
+    {
+        inputControl.Disable();
+        inputControl.PlayerMovement.Movement.performed -= Movement_performed;
+        inputControl.PlayerMovement.Movement.canceled -= Movement_canceled;
+    }
+
+    private void Movement_performed(InputAction.CallbackContext context)
+    {
+        MoveInput = context.ReadValue<Vector2>();
+
+        if(MoveInput != null)
+        {
+            Quaternion toRotation = Quaternion.LookRotation(MoveInput, Vector3.up);
+
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, PlayerRotationSpeed * Time.deltaTime);
+        }
+    }
+
+    private void Movement_canceled(InputAction.CallbackContext context)
+    {
+        MoveInput = Vector2.zero;
+    }
+
+    private void Jump_performed(InputAction.CallbackContext context)
+    {
+        Debug.Log("Jumpeddddddd");
+    }
+
+    private void Jump_canceled(InputAction.CallbackContext context)
+    {
+
     }
 }
