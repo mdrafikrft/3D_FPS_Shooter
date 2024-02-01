@@ -7,16 +7,16 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] float speedOfPlayer;
     [SerializeField] CharacterController characterController;
-    [SerializeField] Transform camerPos;
     [SerializeField] float PlayerRotationSpeed;
 
     InputControls inputControl;
     Vector2 MoveInput = Vector2.zero;
+    float turnSmoothTime = 0.01f;
+    float turnCurrentVelocity;
 
     private void Awake()
     {
         inputControl = new InputControls();
-        //characterController = GetComponent<CharacterController>();
     }
 
     private void FixedUpdate()
@@ -49,11 +49,15 @@ public class PlayerMovement : MonoBehaviour
     {
         MoveInput = context.ReadValue<Vector2>();
 
-        if(MoveInput != null)
+        Vector3 direction = new Vector3(MoveInput.x, 0f, MoveInput.y).normalized;
+        
+        if(direction.magnitude > 0.1f)
         {
-            Quaternion toRotation = Quaternion.LookRotation(MoveInput, Vector3.up);
-
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, PlayerRotationSpeed * Time.deltaTime);
+            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + 90;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnCurrentVelocity, turnSmoothTime);
+            
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
+            characterController.Move(direction * Time.deltaTime * speedOfPlayer);
         }
     }
 
