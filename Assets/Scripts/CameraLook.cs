@@ -17,9 +17,9 @@ public class CameraLook : MonoBehaviour
 
     private void Awake()
     {
-        inputControls = new InputControls();
+        inputControls = new InputControls();/*
         Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        Cursor.visible = false;*/
     }
 
     // Update is called once per frame

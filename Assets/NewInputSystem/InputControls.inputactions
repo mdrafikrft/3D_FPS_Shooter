@@ -31,6 +31,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "fb3b28e3-ed26-46ed-858f-b1e75ebc4123",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Reload",
+                    "type": "Button",
+                    "id": "95029950-3b4a-43a8-ad66-95c4301e252c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "GunPositionAiming",
+                    "type": "Button",
+                    "id": "3a5cd0ad-7fd8-42c1-907a-110074e4671c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -91,6 +118,17 @@
                 },
                 {
                     "name": "",
+                    "id": "61d8fb3a-5071-43b5-a9fe-02b3d8f8bf23",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "88d661e4-76cb-4b28-9815-3a6fd6fb29dc",
                     "path": "<Keyboard>/space",
                     "interactions": "",
@@ -102,12 +140,56 @@
                 },
                 {
                     "name": "",
-                    "id": "bfd6363b-222d-4da7-9092-b8446e2b7137",
+                    "id": "6a55bfe2-22d9-4375-93bc-379ca0ea7dab",
                     "path": "<Mouse>/delta",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6f11a4ec-9ba4-4214-a0d6-a33b08cff4f4",
+                    "path": "<Touchscreen>/touch1/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "dae5bc1d-49b7-4121-b66b-c4ec7462cdfc",
+                    "path": "<Keyboard>/numpad0",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3e8a3474-c0de-4208-81a7-0d259a4565a4",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Reload",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1d599cc2-e0c7-4c66-b280-c035bd9196b8",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "GunPositionAiming",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

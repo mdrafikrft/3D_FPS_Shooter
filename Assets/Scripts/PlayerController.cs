@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
     private float gravity = -9.81f;
     private bool isGrounded = true;
-    private bool canJump = true;
     
 
     private void Awake()
