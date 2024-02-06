@@ -19,14 +19,19 @@ public class GunController : MonoBehaviour
     int ammoInReserve;
 
     //MuzzleFlash
+    [Header("Muzzle Flash")]
     [SerializeField] private Sprite[] flashes;
     [SerializeField] private Image muzzleFlash;
 
     //Aim OF Gun
+    [Header("Aim of Gun")]
     [SerializeField] private Vector3 normalLocalPosition;
     [SerializeField] private Vector3 aimingLocalPosition;
     [SerializeField] float smoothTiming;
     bool canAim = false;
+
+    //RayCasting
+    [SerializeField] LayerMask enemLayerMask;
 
 
     private void Start()
@@ -72,13 +77,13 @@ public class GunController : MonoBehaviour
 
     }
 
-    
-
     IEnumerator ShootGun()
     {
-        //RaycastHit hit;
-        Debug.DrawLine(transform.position, Vector3.forward, Color.red, 2.0f);
+        RecoilOfGun();
         StartCoroutine(MuzzleImage());
+
+        RayCastForEnemy();
+
         yield return new WaitForSeconds(fireRate);
         canShoot = true;
     }
@@ -112,7 +117,32 @@ public class GunController : MonoBehaviour
         
     }
 
+    void RecoilOfGun()
+    {
+        transform.localPosition -= Vector3.forward * 0.1f;
+    }
+
+    void RayCastForEnemy()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.parent.position, transform.parent.forward, out hit, enemLayerMask))
+        {
+            Debug.DrawLine(transform.position, transform.forward, Color.red);
+        }
+    }
     
+
+    /*void SwayGun()
+    {
+        Vector2 mouseAxis = inputControls.Player.Look.ReadValue<Vector2>();
+        mouseAxis *= swayMultiplier;
+
+        currentRotation += mouseAxis;
+        transform.root.localRotation = Quaternion.AngleAxis(currentRotation.x, Vector3.up);
+        transform.parent.localRotation = Quaternion.AngleAxis(-currentRotation.y, Vector3.right);
+    }*/
+
+
     private void OnEnable()
     {
         inputControls.Enable();

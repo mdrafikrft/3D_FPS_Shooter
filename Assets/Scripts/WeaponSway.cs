@@ -1,30 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class WeaponSway : MonoBehaviour
 {
     InputControls inputControls;
 
-    [SerializeField] float smooth;
-    [SerializeField] float swayMultiplier;
+    public float swayAmount = 0.02f;
+    public float maxSwayAmount = 0.06f;
+    public float swaySmooth = 3.0f;
+
+    private Vector3 initialPosition;
+
+    void Start()
+    {
+        initialPosition = transform.localPosition;
+    }
 
     private void Awake()
     {
         inputControls = new InputControls();
     }
-    private void Update()
+
+    void Update()
     {
-        Vector2 mouseAxis = inputControls.Player.Look.ReadValue<Vector2>();
+        Vector2 swayMovement = inputControls.Player.Look.ReadValue<Vector2>();
+        float movementX = -swayMovement.x * swayAmount;
+        float movementY = -swayMovement.y * swayAmount;
 
-        mouseAxis *= swayMultiplier;
-        Quaternion rotationX = Quaternion.AngleAxis(mouseAxis.x, Vector3.right);
-        Quaternion rotationY = Quaternion.AngleAxis(-mouseAxis.y, Vector3.forward);
+        movementX = Mathf.Clamp(movementX, -maxSwayAmount, maxSwayAmount);
+        movementY = Mathf.Clamp(movementY, -maxSwayAmount, maxSwayAmount);
 
-        Quaternion targetRotation = (rotationX * rotationY);
-
-        transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRotation, smooth * Time.deltaTime);
+        Vector3 finalPosition = new Vector3(movementX, movementY, 0);
+        transform.localPosition = Vector3.Slerp(transform.localPosition, finalPosition, Time.deltaTime * swaySmooth);
     }
 
     private void OnEnable()
