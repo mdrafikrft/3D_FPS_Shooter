@@ -31,19 +31,29 @@ public class GunController : MonoBehaviour
     bool canAim = false;
 
     //RayCasting
-    [SerializeField] LayerMask enemLayerMask;
+    [Header("RayCasting of Gun")]
+    [SerializeField] float damage = 10.0f;
+    [SerializeField] float shootRange = 100.0f;
 
+    //Recoiling Of Gun
+    WeaponSway weaponSway;
+
+    //Enemy damage controller
+    Enemy enemy;
 
     private void Start()
     {
         currentAmmoInClip = clipSize;
         ammoInReserve = reservedAmmoCapacity;
         canShoot = true;
+        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
+
     }
 
     private void Awake()
     {
         inputControls = new InputControls();
+        weaponSway = GetComponent<WeaponSway>();
     }
 
     private void FixedUpdate()
@@ -53,6 +63,7 @@ public class GunController : MonoBehaviour
 
     private void Update()
     {
+        Debug.DrawLine(transform.parent.position, transform.parent.forward, Color.red);
         if (inputControls.Player.Shoot.triggered && canShoot && currentAmmoInClip > 0)
         {
             currentAmmoInClip--;
@@ -79,13 +90,13 @@ public class GunController : MonoBehaviour
 
     IEnumerator ShootGun()
     {
-        RecoilOfGun();
+        weaponSway.RecoilOfGun();
         StartCoroutine(MuzzleImage());
-
-        RayCastForEnemy();
 
         yield return new WaitForSeconds(fireRate);
         canShoot = true;
+
+        GunShootRayCasting();
     }
 
     IEnumerator MuzzleImage()
@@ -117,31 +128,20 @@ public class GunController : MonoBehaviour
         
     }
 
-    void RecoilOfGun()
-    {
-        transform.localPosition -= Vector3.forward * 0.1f;
-    }
-
-    void RayCastForEnemy()
+    void GunShootRayCasting()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.parent.position, transform.parent.forward, out hit, enemLayerMask))
+
+        if (Physics.Raycast(transform.parent.position, transform.parent.forward, out hit, shootRange))
         {
-            Debug.DrawLine(transform.position, transform.forward, Color.red);
+            Debug.Log(hit.transform.name);
+            
+            if(hit.transform.tag == "Enemy")
+            {
+                enemy.TakeDamage(damage);
+            }
         }
     }
-    
-
-    /*void SwayGun()
-    {
-        Vector2 mouseAxis = inputControls.Player.Look.ReadValue<Vector2>();
-        mouseAxis *= swayMultiplier;
-
-        currentRotation += mouseAxis;
-        transform.root.localRotation = Quaternion.AngleAxis(currentRotation.x, Vector3.up);
-        transform.parent.localRotation = Quaternion.AngleAxis(-currentRotation.y, Vector3.right);
-    }*/
-
 
     private void OnEnable()
     {
