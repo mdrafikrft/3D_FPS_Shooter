@@ -32,6 +32,7 @@ public class GunController : MonoBehaviour
 
     //RayCasting
     [Header("RayCasting of Gun")]
+    [SerializeField] Transform gunMuzzle;
     [SerializeField] float damage = 10.0f;
     [SerializeField] float shootRange = 100.0f;
 
@@ -40,6 +41,11 @@ public class GunController : MonoBehaviour
 
     //Enemy damage controller
     Enemy enemy;
+
+    //MuzzleFlash Particle
+    [SerializeField] private ParticleSystem muzzleFlashParticleEffect;
+
+    float nextTimeToFire = 0f;
 
     private void Start()
     {
@@ -63,7 +69,6 @@ public class GunController : MonoBehaviour
 
     private void Update()
     {
-        Debug.DrawLine(transform.parent.position, transform.parent.forward, Color.red);
         if (inputControls.Player.Shoot.triggered && canShoot && currentAmmoInClip > 0)
         {
             currentAmmoInClip--;
@@ -90,6 +95,8 @@ public class GunController : MonoBehaviour
 
     IEnumerator ShootGun()
     {
+        muzzleFlashParticleEffect.Play();
+
         weaponSway.RecoilOfGun();
         StartCoroutine(MuzzleImage());
 
