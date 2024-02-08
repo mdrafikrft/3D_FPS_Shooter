@@ -41,11 +41,16 @@ public class GunController : MonoBehaviour
 
     //Enemy damage controller
     Enemy enemy;
+    [SerializeField] float ImpactForceToEnemy = 10.0f;
+    
 
     //MuzzleFlash Particle
     [SerializeField] private ParticleSystem muzzleFlashParticleEffect;
 
-    float nextTimeToFire = 0f;
+    //particle effects
+    [SerializeField] GameObject bulletImpactEffect;
+    [SerializeField] GameObject enemyKillParticleEffect;
+
 
     private void Start()
     {
@@ -77,12 +82,12 @@ public class GunController : MonoBehaviour
         }
         else if(inputControls.Player.Reload.triggered && currentAmmoInClip < clipSize && ammoInReserve >= 0)
         {
-            int ammoundNeeded = clipSize - currentAmmoInClip;
+            int ammoNeeded = clipSize - currentAmmoInClip;
 
-            if(ammoundNeeded <= ammoInReserve)
+            if(ammoNeeded <= ammoInReserve)
             {
                 currentAmmoInClip = clipSize;
-                ammoInReserve -= ammoundNeeded;
+                ammoInReserve -= ammoNeeded;
             }            
         }
 
@@ -105,6 +110,7 @@ public class GunController : MonoBehaviour
 
         GunShootRayCasting();
     }
+
 
     IEnumerator MuzzleImage()
     {
@@ -146,6 +152,16 @@ public class GunController : MonoBehaviour
             if(hit.transform.tag == "Enemy")
             {
                 enemy.TakeDamage(damage);
+
+                hit.rigidbody.AddForce(-hit.normal * ImpactForceToEnemy);
+                GameObject killEffect = Instantiate(enemyKillParticleEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(killEffect, 1.0f);
+
+                
+            }
+            else
+            {
+                Instantiate(bulletImpactEffect, hit.point, Quaternion.LookRotation(hit.normal));
             }
         }
     }
