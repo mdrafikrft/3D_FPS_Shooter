@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -10,13 +8,11 @@ public class Enemy : MonoBehaviour
     [SerializeField] AudioSource source;
     [SerializeField] AudioClip barealExplosion;
 
-    private void Start()
-    {
-    }
+   
     public void TakeDamage(float damageAmount)
     {
         enemyHealth -= damageAmount;
-        if(enemyHealth <= 0.0f)
+        if(enemyHealth <= 0.1f)
         {
             Die();
         }
@@ -27,7 +23,7 @@ public class Enemy : MonoBehaviour
         GameObject deathEffect = Instantiate(enemyDeathEffect, transform.position, Quaternion.identity);
         source.PlayOneShot(barealExplosion);
 
-        Destroy(deathEffect, 2.0f);
+        Destroy(deathEffect, 2.5f);
         Destroy(gameObject);
     }
 }

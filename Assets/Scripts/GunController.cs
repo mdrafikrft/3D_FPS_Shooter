@@ -28,7 +28,7 @@ public class GunController : MonoBehaviour
     [SerializeField] private Vector3 normalLocalPosition;
     [SerializeField] private Vector3 aimingLocalPosition;
     [SerializeField] float smoothTiming;
-    bool canAim = false;
+    bool wantAim = false;
 
     //RayCasting
     [Header("RayCasting of Gun")]
@@ -40,7 +40,6 @@ public class GunController : MonoBehaviour
     WeaponSway weaponSway;
 
     //Enemy damage controller
-    Enemy enemy;
     [SerializeField] float ImpactForceToEnemy = 10.0f;
     
 
@@ -57,8 +56,7 @@ public class GunController : MonoBehaviour
         currentAmmoInClip = clipSize;
         ammoInReserve = reservedAmmoCapacity;
         canShoot = true;
-        enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Enemy>();
-
+        
     }
 
     private void Awake()
@@ -74,12 +72,15 @@ public class GunController : MonoBehaviour
 
     private void Update()
     {
+        //Shoot activity 
         if (inputControls.Player.Shoot.triggered && canShoot && currentAmmoInClip > 0)
         {
             currentAmmoInClip--;
             canShoot = false;
             StartCoroutine(ShootGun());
         }
+
+        //Reloading of Gun Activity
         else if(inputControls.Player.Reload.triggered && currentAmmoInClip < clipSize && ammoInReserve >= 0)
         {
             int ammoNeeded = clipSize - currentAmmoInClip;
@@ -93,7 +94,7 @@ public class GunController : MonoBehaviour
 
         if (inputControls.Player.GunPositionAiming.triggered)
         {
-            canAim = !canAim;
+            wantAim = !wantAim;
         }
 
     }
@@ -106,6 +107,7 @@ public class GunController : MonoBehaviour
         StartCoroutine(MuzzleImage());
 
         yield return new WaitForSeconds(fireRate);
+        
         canShoot = true;
 
         GunShootRayCasting();
@@ -125,14 +127,14 @@ public class GunController : MonoBehaviour
     {
         Vector3 target = normalLocalPosition;
 
-        if (canAim)
+        if (wantAim)
         {
             target = aimingLocalPosition;
             Vector3 desiredPosition = Vector3.Slerp(transform.localPosition, target, smoothTiming * Time.fixedDeltaTime);
             transform.localPosition = desiredPosition;
             target = normalLocalPosition;
         }
-        if (!canAim)
+        if (!wantAim)
         {
             Vector3 disiredPosition = Vector3.Slerp(transform.localPosition, target, smoothTiming * Time.deltaTime);
             transform.localPosition = disiredPosition;
@@ -148,17 +150,23 @@ public class GunController : MonoBehaviour
         if (Physics.Raycast(transform.parent.position, transform.parent.forward, out hit, shootRange))
         {
             Debug.Log(hit.transform.name);
-            
-            if(hit.transform.tag == "Enemy")
-            {
-                enemy.TakeDamage(damage);
 
-                hit.rigidbody.AddForce(-hit.normal * ImpactForceToEnemy);
+            Enemy barrels = hit.transform.GetComponent<Enemy>();
+           
+            if(barrels != null)
+            {
+                if (hit.rigidbody != null)
+                {
+                    hit.rigidbody.AddForce(-hit.normal * ImpactForceToEnemy);
+                }
+
                 GameObject killEffect = Instantiate(enemyKillParticleEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 Destroy(killEffect, 1.0f);
 
-                
+                barrels.TakeDamage(damage);
+
             }
+            
             else
             {
                 Instantiate(bulletImpactEffect, hit.point, Quaternion.LookRotation(hit.normal));
