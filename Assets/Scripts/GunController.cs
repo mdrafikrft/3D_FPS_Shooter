@@ -50,7 +50,7 @@ public class GunController : MonoBehaviour
     [SerializeField] GameObject bulletImpactEffect;
     [SerializeField] GameObject enemyKillParticleEffect;
 
-
+    
     private void Start()
     {
         currentAmmoInClip = clipSize;
@@ -92,11 +92,13 @@ public class GunController : MonoBehaviour
             }            
         }
 
+        //Gun Aiming Input
         if (inputControls.Player.GunPositionAiming.triggered)
         {
             wantAim = !wantAim;
         }
 
+        
     }
 
     IEnumerator ShootGun()
@@ -174,6 +176,7 @@ public class GunController : MonoBehaviour
         }
     }
 
+   
     private void OnEnable()
     {
         inputControls.Enable();
