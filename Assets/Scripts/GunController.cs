@@ -50,6 +50,11 @@ public class GunController : MonoBehaviour
     [SerializeField] GameObject bulletImpactEffect;
     [SerializeField] GameObject enemyKillParticleEffect;
 
+    //Gun Firing Sounds
+    [Header("Gun Firing Sounds")]
+    [SerializeField] private AudioSource GunFiringSource;
+
+    private float lastTimeFired = 0;
     
     private void Start()
     {
@@ -73,11 +78,11 @@ public class GunController : MonoBehaviour
     private void Update()
     {
         //Shoot activity 
-        if (inputControls.Player.Shoot.triggered && canShoot && currentAmmoInClip > 0)
+        if (Input.GetButton("Fire1") && currentAmmoInClip > 0 && Time.time >= lastTimeFired + (1/fireRate))
         {
             currentAmmoInClip--;
             canShoot = false;
-            StartCoroutine(ShootGun());
+            ShootGun();
         }
 
         //Reloading of Gun Activity
@@ -101,18 +106,22 @@ public class GunController : MonoBehaviour
         
     }
 
-    IEnumerator ShootGun()
+    private void ShootGun()
     {
         muzzleFlashParticleEffect.Play();
 
         weaponSway.RecoilOfGun();
         StartCoroutine(MuzzleImage());
 
-        yield return new WaitForSeconds(fireRate);
+        lastTimeFired = Time.time;
+
+        /*yield return new WaitForSeconds(fireRate);
         
-        canShoot = true;
+        canShoot = true;*/
 
         GunShootRayCasting();
+
+        GunFiringSource.Play();
     }
 
 
